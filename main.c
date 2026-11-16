@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
+
+#define PTR_W 14
 
 typedef struct Node {
     char *value;
@@ -15,7 +18,6 @@ typedef struct {
     Node *tail;
     size_t size;
 } Deque;
-
 
 Deque create_deque() {
     Deque d;
@@ -48,19 +50,36 @@ Node *create_node(char key, char *value) {
     return new_node;
 }
 
-int is_empty(Deque *d) {
-    if (d->size == 0) {
-        return 1;
-    } else {
-        return 0;
-    }
+int is_empty(const Deque *d) {
+    return d->size == 0;
 }
 
-int deque_size(Deque *d) {
-    return d->size;
+int deque_size(const Deque *d) {
+    return (int)d->size;
+}
+
+int is_key_used(Deque *d, char key) {
+    if (d->size == 0) {
+        return 0;
+    }
+
+    Node *curr = d->head;
+    while (curr != NULL) {
+        if (curr->key == key) {
+            return 1;
+        } else{
+            curr = curr->NextPtr;
+        }
+    }
+    return 0;
 }
 
 void push_front(Deque *d, char key, char *value) {
+    if (is_key_used(d, key)) {
+        printf("Key is already used\n");
+        return;
+    }
+
     Node *new_node = create_node(key, value);
 
     if (is_empty(d)) {
@@ -75,6 +94,11 @@ void push_front(Deque *d, char key, char *value) {
 }
 
 void push_back(Deque *d, char key, char *value) {
+    if (is_key_used(d, key)) {
+        printf("Key is already used\n");
+        return;
+    }
+
     Node *new_node = create_node(key, value);
 
     if (is_empty(d)) {
@@ -87,7 +111,6 @@ void push_back(Deque *d, char key, char *value) {
     }
     d->size++;
 }
-
 
 int pop_front(Deque *d) {
     if (is_empty(d)) {
@@ -131,71 +154,62 @@ int pop_back(Deque *d) {
     return 0;
 }
 
+
+void print_border(const Node *head) {
+    for (const Node *c = head; c != NULL; c = c->NextPtr) {
+        printf("+----------------------+");
+        if (c->NextPtr != NULL) printf("     ");
+    }
+    printf("\n");
+}
+
 void print_deque(const Deque *d) {
     printf("\n=== Deque ===\n");
-    printf("Size: %zu | Head: %p | Tail: %p\n\n", d->size, (void*)d->head, (void*)d->tail);
+    printf("Size: %zu | Head: %p | Tail: %p\n\n", d->size, (void *)d->head, (void *)d->tail);
 
     if (is_empty(d)) {
         printf("[ Deque is empty ]\n\n");
         return;
     }
 
-    Node *curr = d->head;
-    while (curr != NULL) {
-        printf("+--------------------+");
-        if (curr->NextPtr != NULL) printf("     ");
-        curr = curr->NextPtr;
+    const Node *curr;
+
+    print_border(d->head);
+
+    for (curr = d->head; curr; curr = curr->NextPtr) {
+        printf("| Addr: %-*p |", PTR_W, (void *)curr);
+        if (curr->NextPtr) printf("     ");
     }
     printf("\n");
 
-
-    curr = d->head;
-    while (curr != NULL) {
-        printf("| Addr: %-12p |", (void*)curr);
-        if (curr->NextPtr != NULL) printf("     ");
-        curr = curr->NextPtr;
+    for (curr = d->head; curr; curr = curr->NextPtr) {
+        printf("| [%c] : %-*.*s |", curr->key, PTR_W, 11, curr->value);
+        if (curr->NextPtr) printf(" <-> ");
     }
     printf("\n");
 
-    curr = d->head;
-    while (curr != NULL) {
-        printf("| [%c] : %-12.11s |", curr->key, curr->value);
-        if (curr->NextPtr != NULL) printf(" <-> ");
-        curr = curr->NextPtr;
+    for (curr = d->head; curr; curr = curr->NextPtr) {
+        printf("| Prev: %-*p |", PTR_W, (void *)curr->PrevPtr);
+        if (curr->NextPtr) printf("     ");
     }
     printf("\n");
 
-    curr = d->head;
-    while (curr != NULL) {
-        printf("| Prev: %-12p |", (void*)curr->PrevPtr);
-        if (curr->NextPtr != NULL) printf("     ");
-        curr = curr->NextPtr;
+    for (curr = d->head; curr; curr = curr->NextPtr) {
+        printf("| Next: %-*p |", PTR_W, (void *)curr->NextPtr);
+        if (curr->NextPtr) printf("     ");
     }
     printf("\n");
 
-    curr = d->head;
-    while (curr != NULL) {
-        printf("| Next: %-12p |", (void*)curr->NextPtr);
-        if (curr->NextPtr != NULL) printf("     ");
-        curr = curr->NextPtr;
-    }
+    print_border(d->head);
     printf("\n");
-
-    curr = d->head;
-    while (curr != NULL) {
-        printf("+--------------------+");
-        if (curr->NextPtr != NULL) printf("     ");
-        curr = curr->NextPtr;
-    }
-    printf("\n\n");
 }
 
-void print_elements(Deque *d) {
+void print_elements(const Deque *d) {
     if (is_empty(d)) {
         printf("Deque is empty\n");
     } else {
         printf("=== Deque ===\n");
-        Node *curr = d->head;
+        const Node *curr = d->head;
         while (curr != NULL) {
             printf("| [%c]: \"%s\"  |", curr->key, curr->value);
             if (curr->NextPtr != NULL) printf("  <->  ");
@@ -204,7 +218,6 @@ void print_elements(Deque *d) {
         printf("\n");
     }
 }
-
 
 void swap_neighbours(Deque *d, Node *first, Node *second) {
     Node *prev_node = first->PrevPtr;
@@ -221,7 +234,6 @@ void swap_neighbours(Deque *d, Node *first, Node *second) {
     } else {
         d->tail = first;
     }
-
 
     second->PrevPtr = prev_node;
     second->NextPtr = first;
@@ -256,6 +268,11 @@ void bubble_sort(Deque *d) {
 }
 
 void insert_in_sorted(Deque *d, char key, char *value) {
+    if (is_key_used(d, key)) {
+        printf("Key is already used\n");
+        return;
+    }
+
     if (is_empty(d) || strcmp(value, d->head->value) <= 0) {
         push_front(d, key, value);
         return;
@@ -374,7 +391,7 @@ int main(void) {
                 printf("Element inserted in sorted order.\n");
                 break;
 
-            case 7:
+            case 7: {
                 if (is_empty(&d)) {
                     printf("Deque is empty!\n");
                     break;
@@ -383,11 +400,12 @@ int main(void) {
                 scanf(" %c", &key);
                 Node *found = search_by_key(&d, key);
                 if (found != NULL) {
-                    printf("Found -> [%c]: \"%s\" (Addr: %p)\n", found->key, found->value, (void*)found);
+                    printf("Found -> [%c]: \"%s\" (Addr: %p)\n", found->key, found->value, (void *)found);
                 } else {
                     printf("Element with key '%c' not found.\n", key);
                 }
                 break;
+            }
 
             case 8:
                 display_mode = !display_mode;
