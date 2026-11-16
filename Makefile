@@ -20,7 +20,3 @@ build/main.o: src/main.c include/deque.h include/print.h
 run: main
 	./build/main
 
-clean:
-	rm -rf build
-
-.PHONY: run clean

@@ -19,7 +19,7 @@ int main(void) {
         printf("2 - push to back of deque\n");
         printf("3 - delete from front of deque\n");
         printf("4 - delete from back of deque\n");
-        printf("5 - sort by values\n");
+        printf("5 - sort by keys\n");
         printf("6 - insert in sorted deque\n");
         printf("7 - find by key\n");
         printf("8 - change mode of show deque (current: %s)\n", display_mode == 0 ? "Elements" : "Detailed");
@@ -67,7 +67,6 @@ int main(void) {
 
             case 5:
                 bubble_sort(&d);
-                printf("Deque sorted by values.\n");
                 break;
 
             case 6:

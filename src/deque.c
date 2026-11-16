@@ -134,7 +134,7 @@ int pop_back(Deque *d) {
     return 0;
 }
 
-static void swap_neighbours(Deque *d, Node *first, Node *second) {
+void swap_neighbours(Deque *d, Node *first, Node *second) {
     Node *prev_node = first->PrevPtr;
     Node *next_node = second->NextPtr;
 
@@ -170,7 +170,7 @@ void bubble_sort(Deque *d) {
         curr = d->head;
 
         while (curr->NextPtr != last_sorted) {
-            if (strcmp(curr->value, curr->NextPtr->value) > 0) {
+            if (curr->key > curr->NextPtr->key) {
                 swap_neighbours(d, curr, curr->NextPtr);
                 swapped = 1;
             } else {
