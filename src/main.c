@@ -56,16 +56,12 @@ int main(void) {
             case 3:
                 if (pop_front(&d) == 0) {
                     printf("Deleted from front.\n");
-                } else {
-                    printf("Deque is already empty!\n");
-                }
+                } 
                 break;
 
             case 4:
                 if (pop_back(&d) == 0) {
                     printf("Deleted from back.\n");
-                } else {
-                    printf("Deque is already empty!\n");
                 }
                 break;
 

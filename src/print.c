@@ -14,7 +14,7 @@ static void print_border(const Node *head) {
 
 void print_deque(const Deque *d) {
     printf("\n=== Deque ===\n");
-    printf("Size: %zu | Head: %p | Tail: %p\n\n", d->size, (void *)d->head, (void *)d->tail);
+    printf("Size: %d | Head: %p | Tail: %p\n\n", deque_size(d), (void *)d->head, (void *)d->tail);
 
     if (is_empty(d)) {
         printf("[ Deque is empty ]\n\n");
